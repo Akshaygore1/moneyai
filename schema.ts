@@ -1,13 +1,11 @@
-import { integer, pgTable, serial, text } from "drizzle-orm/pg-core";
+import { integer, numeric, pgTable, serial, text } from "drizzle-orm/pg-core";
 
 export const transactions = pgTable("transactions", {
   id: serial("id").primaryKey(),
-  type: text("type"),
-  amount: integer("amount"),
+  transaction_type: text("transaction_type"),
+  category: text("category"),
+  amount: numeric("amount", { precision: 10, scale: 2 }),
   currency: text("currency"),
-  account: text("account"),
-  vpa: text("vpa"),
+  transaction_date: text("transaction_date"),
   recipient_name: text("recipient_name"),
-  date: text("date"),
-  reference_number: integer("reference_number"),
 });

@@ -13,8 +13,14 @@ export const authOptions: NextAuthOptions = {
             "openid email profile https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send",
         },
       },
+      httpOptions: {
+        timeout: 10000,
+      },
     }),
   ],
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
     async session({ session, token }) {
       // @ts-ignore
@@ -27,9 +33,6 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
-  },
-  pages: {
-    signIn: "/auth/signin",
   },
 };
 

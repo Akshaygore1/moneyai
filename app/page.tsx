@@ -2,8 +2,7 @@
 
 import { useSession, signIn, signOut } from "next-auth/react";
 import GmailDashboardRoute from "../components/GmailDashboardRoute";
-import { useEffect } from "react";
-import AichatBox from "@/components/AichatBox";
+import Chat from "@/components/AichatBox";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -53,7 +52,7 @@ export default function Home() {
           <GmailDashboardRoute />
         </div>
         <div className="py-8">
-          <AichatBox />
+          <Chat />
         </div>
       </div>
     );

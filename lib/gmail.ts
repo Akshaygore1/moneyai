@@ -25,29 +25,44 @@ export class GmailService {
     this.gmail = google.gmail({ version: "v1", auth });
   }
 
-  async getEmails(maxResults: number = 10): Promise<TransactionData[]> {
+  async getEmails(maxResults: number = 10): Promise<string[]> {
     try {
       const response = await this.gmail.users.messages.list({
         userId: "me",
-        q: "from:alerts@hdfcbank.net after:2025/06/1 before:2025/06/19",
+        q: "from:alerts@hdfcbank.net after:2025/06/01 before:2025/06/28",
       });
       if (!response.data.messages) {
         return [];
       }
 
-      const emails = await Promise.all(
+      const emails: string[] = await Promise.all(
         response.data.messages.map(async (message) => {
           const email = await this.gmail.users.messages.get({
             userId: "me",
             id: message.id!,
           });
-          return email.data.snippet as string;
+          const text: string | null | undefined = email.data.snippet;
+          if (!text) {
+            return null;
+          }
+          const cleanedMessage = text
+            .replace("Dear Customer, ", "")
+            .replace("from account 9434 ", "")
+            .replace("Your UPI transaction reference number is.", "")
+            .replace("If you did not authorize this", "")
+            .replace("Your UPI transaction reference number", "")
+            .trim();
+          return cleanedMessage[0] === "R" ? cleanedMessage : null;
         })
+      ).then((emails) =>
+        emails.filter(
+          (email): email is string => email !== null && email !== undefined
+        )
       );
+      // const parsedTransactions = parseMultipleTransactions(emails);
 
-      const parsedTransactions = parseMultipleTransactions(emails);
-
-      return parsedTransactions;
+      // return parsedTransactions;
+      return emails;
     } catch (error) {
       console.error("Error fetching emails:", error);
       throw error;
